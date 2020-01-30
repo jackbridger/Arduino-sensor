@@ -17,31 +17,74 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script>
+    const EMG_CHANNEL = "EMG_CHANNEL";
+    var socket = io.connect('http://127.0.0.1:3000');
 
-    const outputData = [{ x: new Date(), y: 7 }, { x: new Date(), y: 9 },];
+
+
     var ctx = document.getElementById('myChart').getContext('2d');
-    const List = document.querySelector(".list-of-events")
-    var socket = io.connect('http://localhost');
-
-    var myLineChart = new Chart(ctx, {
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
         type: 'line',
-        data: outputData,
+
+        // The data for our dataset
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Strength",
+                borderColor: "#FF5733",
+                data: [],
+                fill: false,
+                pointStyle: 'circle',
+                backgroundColor: '#3498DB',
+                // pointRadius: 5,
+                // pointHoverRadius: 7,
+                lineTension: 1,
+            }]
+        },
+
+        // Configuration options go here
         options: {
+            animation: false,
             scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        unit: 'month'
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 1000
                     }
                 }]
             }
         }
+
     });
 
-    socket.on('emg', function (data) {
-        // outputData.push(data);
+    socket.on(EMG_CHANNEL, function (data) { //As a temp data is received 
+        console.log(data)
+        console.log(chart.data)
+        if (chart.data.datasets[0].data.length < 20) {
+            chart.data.datasets[0].data.push(data)
+        }
+        else {
+            chart.data.datasets[0].data.shift();
+            chart.data.datasets[0].data.push(data)
+        }
+        // console.log(chart.datasets.data)
 
-
-
+        // if (chart.data.labels.length != 15) { //If we have less than 15 data points in the graph
+        //     chart.data.labels.push(data);  //Add time in x-asix
+        //     chart.data.datasets.forEach((dataset) => {
+        //         dataset.data.push(data.temp); //Add temp in y-axis
+        //     });
+        // }
+        // else { //If there are already 15 data points in the graph.
+        //     chart.data.labels.shift(); //Remove first time data
+        //     chart.data.labels.push(data.time); //Insert latest time data
+        //     chart.data.datasets.forEach((dataset) => {
+        //         dataset.data.shift(); //Remove first temp data
+        //         dataset.data.push(data.temp); //Insert latest temp data
+        //     });
+        // }
+        chart.update(); //Update the graph.
     });
 </script>
