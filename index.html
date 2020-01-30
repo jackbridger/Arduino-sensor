@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html>
 
+
 <body>
-
-    <h1>My First Heading</h1>
-
-
-    <canvas id="myChart" width="200" height="200"></canvas>
-
-    <p>My first paragraph.</p>
-    <li class="list-of-events"></li>
-
+    <canvas id="myChart" width="200px" height="200px"></canvas>
 </body>
 
 </html>
@@ -19,9 +12,6 @@
 <script>
     const EMG_CHANNEL = "EMG_CHANNEL";
     var socket = io.connect('http://127.0.0.1:3000');
-
-
-
     var ctx = document.getElementById('myChart').getContext('2d');
     var chart = new Chart(ctx, {
         // The type of chart we want to create
@@ -37,9 +27,6 @@
                 fill: false,
                 pointStyle: 'circle',
                 backgroundColor: '#3498DB',
-                // pointRadius: 5,
-                // pointHoverRadius: 7,
-                // lineTension: 1,
             }]
         },
 
@@ -58,33 +45,10 @@
         }
 
     });
-
     socket.on(EMG_CHANNEL, function (data) { //As a temp data is received 
-        console.log(data)
-        console.log(chart.data)
-        // if (chart.data.datasets[0].data.length < 20) {
-        //     chart.data.datasets[0].data.push({ x: "strength", y: data })
-        // }
-        // else {
         chart.data.datasets[0].data.shift();
         chart.data.datasets[0].data.push({ x: "strength", y: data })
-        // }
-        // console.log(chart.datasets.data)
 
-        // if (chart.data.labels.length != 15) { //If we have less than 15 data points in the graph
-        //     chart.data.labels.push(data);  //Add time in x-asix
-        //     chart.data.datasets.forEach((dataset) => {
-        //         dataset.data.push(data.temp); //Add temp in y-axis
-        //     });
-        // }
-        // else { //If there are already 15 data points in the graph.
-        //     chart.data.labels.shift(); //Remove first time data
-        //     chart.data.labels.push(data.time); //Insert latest time data
-        //     chart.data.datasets.forEach((dataset) => {
-        //         dataset.data.shift(); //Remove first temp data
-        //         dataset.data.push(data.temp); //Insert latest temp data
-        //     });
-        // }
         chart.update(); //Update the graph.
     });
 </script>
