@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -12,6 +12,7 @@
   "dependencies": {
     "chart.js": "^2.9.3",
     "johnny-five": "^1.4.0",
+    "nodemon": "^2.0.2",
     "socket.io": "^2.3.0"
   }
 }

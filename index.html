@@ -1,47 +1,54 @@
 <!DOCTYPE html>
 <html>
 
+
 <body>
-
-    <h1>My First Heading</h1>
-
-
-    <canvas id="myChart" width="400" height="400"></canvas>
-
-    <p>My first paragraph.</p>
-    <li class="list-of-events"></li>
-
+    <canvas id="myChart" width="200px" height="200px"></canvas>
 </body>
 
 </html>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script>
-
-    const outputData = [{ x: new Date(), y: 7 }, { x: new Date(), y: 9 },];
+    const EMG_CHANNEL = "EMG_CHANNEL";
+    var socket = io.connect('http://127.0.0.1:3000');
     var ctx = document.getElementById('myChart').getContext('2d');
-    const List = document.querySelector(".list-of-events")
-    var socket = io.connect('http://localhost');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
 
-    var myLineChart = new Chart(ctx, {
-        type: 'line',
-        data: outputData,
+        // The data for our dataset
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Strength",
+                borderColor: "#FF5733",
+                data: [],
+                fill: false,
+                pointStyle: 'circle',
+                backgroundColor: '#3498DB',
+            }]
+        },
+
+        // Configuration options go here
         options: {
+            animation: false,
             scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        unit: 'month'
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 1000
                     }
                 }]
             }
         }
+
     });
+    socket.on(EMG_CHANNEL, function (data) { //As a temp data is received 
+        chart.data.datasets[0].data.shift();
+        chart.data.datasets[0].data.push({ x: "strength", y: data })
 
-    socket.on('emg', function (data) {
-        // outputData.push(data);
-
-
-
+        chart.update(); //Update the graph.
     });
 </script>
